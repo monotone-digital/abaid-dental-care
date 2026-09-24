@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "abaid-dental",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "Website", "run", "dev", "--", "--port", "3111"],
+      "port": 3111
+    }
+  ]
+}

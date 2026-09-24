@@ -1,0 +1,9 @@
+# Google Drive folder metadata
+desktop.ini
+.DS_Store
+
+# Original PNGs from Magnific (large; kept on Drive only)
+Public/Images/Site/_source/
+
+# Local Claude Code settings
+.claude/settings.local.json

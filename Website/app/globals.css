@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Inline, so each font resolves where it is used: the route groups load their own fonts. */
+@theme inline {
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-brand: var(--font-urbanist), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme {
+  --color-ink: #092a31;
+  --color-body: #4b6771;
+  --color-muted: #7b959d;
+
+  --color-teal: #0e8f9c;
+  --color-accent: #09737f;
+  --color-accent-light: #7dd3da;
+  --color-teal-600: #0c7d89;
+  --color-teal-700: #0a6b76;
+  --color-teal-800: #0a5761;
+  --color-teal-900: #07414a;
+
+  --color-mint: #d6eeec;
+  --color-mint-100: #e7f5f4;
+  --color-mint-50: #f1f9f9;
+  --color-cream: #f6fbfb;
+  --color-line: #dae8e9;
+  --color-line-dark: #1b6975;
+
+  --color-whatsapp: #25d366;
+
+  /* Brand guide, September 2026: Care Teal leads, Warm White is the ground,
+     Deep Teal and Coral are accents. Charcoal is the logo's own black. */
+  --color-care: #0dbab3;
+  --color-care-100: #d4f3f1;
+  --color-care-50: #ebf9f8;
+  --color-deep: #195a5e;
+  --color-deep-700: #134649;
+  --color-coral: #da7f6c;
+  --color-coral-100: #f8e3dd;
+  --color-warm: #f5ece5;
+  --color-warm-200: #ebdfd5;
+  --color-charcoal: #231f20;
+  --color-copy: #5e5856;
+  --color-hint: #6a6361;
+
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
+  --radius-hero: 2.25rem;
+
+  --breakpoint-3xl: 105rem;
+}
