@@ -35,12 +35,7 @@ export function getGlobal(): Global {
   return cached;
 }
 
-/** A value is only usable if the copy team has actually supplied it. */
-export const isMissing = (value: unknown): boolean =>
-  typeof value !== "string" || value.trim() === "" || value.includes("[NEEDS:");
-
-export const resolved = (value: string | undefined): string | null =>
-  isMissing(value) ? null : (value as string);
+export { isMissing, resolved } from "./resolved";
 
 export type BrandNavItem = { title: string; href?: string; children?: NavItem[] };
 

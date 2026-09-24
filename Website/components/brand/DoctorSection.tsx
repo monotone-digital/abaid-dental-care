@@ -10,7 +10,7 @@ import { Actions, Band, Heading, Pill, paragraphs } from "./ui";
  * content). The "+" framing of the first two figures is the client's call; BDS and C.Orth are
  * explained with the first paragraph's own words ("dental degree", "certificate in orthodontics").
  */
-const FIGURES = [
+export const FIGURES = [
   { value: "6", suffix: "+", label: "Years of experience" },
   { value: "3,000", suffix: "+", label: "Patients treated" },
   { value: "BDS", suffix: "", label: "Dental degree" },

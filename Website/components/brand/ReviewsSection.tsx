@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Page, Review, Section } from "@/lib/content";
 import { getReviewsByIds } from "@/lib/content";
 import type { Global } from "@/lib/global";
@@ -27,14 +28,18 @@ export default function ReviewsSection({
   section,
   page,
   global,
+  picture,
 }: {
   section: Section;
   page: Page;
   global: Global;
+  /** Beside a single review, a photograph of the clinic (where the copy's @visual asks for one). */
+  picture?: { src: string; alt: string } | null;
 }) {
   const reviews: Review[] = getReviewsByIds(section.reviewIds);
   if (!reviews.length) return null;
   const [featured, ...rest] = reviews;
+  const photo = rest.length ? null : picture;
 
   return (
     <Band id={section.id}>
@@ -43,7 +48,7 @@ export default function ReviewsSection({
         {section.sub ? <p className="mt-4 text-[1.05rem] leading-[1.7] text-copy">{section.sub}</p> : null}
       </div>
 
-      <div className={`mt-10 grid gap-4 ${rest.length ? "lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]" : ""}`}>
+      <div className={`mt-10 grid gap-4 ${rest.length || photo ? "lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]" : ""}`}>
         <figure className="flex flex-col rounded-3xl bg-care p-7 sm:p-10">
           <QuoteIcon className="h-10 w-10 text-charcoal" />
           {/* A blockquote, so the copy check can tell quoted words from the clinic's own. */}
@@ -71,6 +76,12 @@ export default function ReviewsSection({
               </li>
             ))}
           </ul>
+        ) : null}
+
+        {photo ? (
+          <div className="relative hidden min-h-[20rem] overflow-hidden rounded-3xl bg-care-100 lg:block">
+            <Image src={photo.src} alt={photo.alt} fill sizes="36vw" className="object-cover" />
+          </div>
         ) : null}
       </div>
 

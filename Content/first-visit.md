@@ -44,7 +44,6 @@ You are anaesthetised for the treatment itself.
 
 ## You can see it yourself
 @id: see-it
-@cta: whatsapp
 @visual: interior
 @note: Use an interior image where the screen is visible, if one exists.
 

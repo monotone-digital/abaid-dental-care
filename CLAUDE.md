@@ -55,9 +55,14 @@ service because a dental site "usually" has one.
 real photo exist: portraits of Dr Abaid, clinic interiors, one exterior shot, consented
 before/afters, and one treatment-in-process photo of Dr Abaid treating a patient
 (`Treatment in process/`, used via `@visual: treatment`). The only other imagery is the
-generated site set in `Public/Images/Site/` (hero, treatment cards), added at the owner's
-request. No team, equipment or stock photography beyond that. No placeholder boxes.
+generated site set in `Public/Images/Site/` (heroes, treatment cards, and pictures for the
+inner pages' sections), added at the owner's request: ultra-realistic, made with the Magnific
+MCP (Nano Banana Pro). A generated picture never shows a dentist's face (gloved hands or a
+back only), never shows staff or a second clinician, and never shows implants, veneers or
+framed certificates. No stock photography. No placeholder boxes.
 A `before-after` section with no images in its folder is omitted entirely.
+* **The clinic's shop sign lists "C.Implant".** Crop the exterior photograph so the sign is
+never legible (Contact keeps to the shopfront below it).
 
 ## Decided since the brief
 
@@ -66,6 +71,12 @@ every answer stays in the HTML. Standalone question sections (e.g. teeth-cleanin
 "Does it damage the enamel?") are ordinary sections and stay open.
 * Other deliberate departures from the content (hidden sections, the Dr Abaid stat cards)
 are commented where they happen in `Website/components/`.
+* **Design (from 24 Sep 2026): the brand refresh, on every page.** Urbanist, Warm White
+ground, Care Teal, Deep Teal and Coral; after the "ClearDent" reference. Home is
+`components/brand/HomePage.tsx`; every other page is `components/brand/page/ContentPage.tsx`,
+and which layout each section gets (steps, compare, cost panel, checklist…) and its pictures
+are set in `components/brand/page/layouts.ts`. Layouts arrange a section's own paragraphs in
+their own order; they never change a word. White text only on Deep Teal.
 
 ## WhatsApp
 
@@ -91,11 +102,9 @@ The WhatsApp button is always reachable without scrolling on a 360px viewport.
 |`content/reviews.md`|Rendering any `@reviews:` reference|
 |`content/<slug>.md`|Building that page|
 
-## Build order
+## Commands
 
-Home first and completely: tokens, header, footer, sticky WhatsApp bar, today's-hours
-line, map, JSON-LD, and every section type it uses. After that each page is "build
-`content/<slug>.md`, match Home". Commands
+Run from `Website/`. `npm run …` runs the same scripts where `pnpm` itself is blocked.
 
 ```
 pnpm dev

@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Section } from "@/lib/content";
 import type { Global } from "@/lib/global";
+import { resolved } from "@/lib/resolved";
 import Container from "../Container";
-import { ArrowUpRight, PhoneIcon, WhatsAppIcon } from "../Icons";
+import { ArrowUpRight, MapPinIcon, PhoneIcon, WhatsAppIcon } from "../Icons";
 
 /**
  * The new brand's building blocks (September 2026 direction): Warm White ground, Care Teal
  * surfaces, Deep Teal for actions, Coral for small accents, Charcoal (the logo's black) for
- * words. Home uses them now; the other pages move over once Home is approved.
+ * words. Every page is built from them (Home from 24 Sep 2026, the rest from the rollout after).
  *
  * Text never sits in white on Care Teal or Coral — both fall below 3:1 — so text on those
  * surfaces is Charcoal, and white text only appears on Deep Teal.
@@ -69,12 +70,15 @@ export function WhatsAppButton({
   className = "",
   compact = false,
   onDark = false,
+  onCare = false,
 }: {
   href: string;
   label: string;
   className?: string;
   compact?: boolean;
   onDark?: boolean;
+  /** On the Care Teal band the WhatsApp square turns white, or it would vanish into the ground. */
+  onCare?: boolean;
 }) {
   return (
     <a
@@ -91,7 +95,7 @@ export function WhatsAppButton({
         <span className="truncate">{label}</span>
       </span>
       <span
-        className={`${squareBase} bg-care text-charcoal ${
+        className={`${squareBase} ${onCare ? "bg-white text-deep" : "bg-care text-charcoal"} ${
           onDark ? "group-hover:bg-white" : "group-hover:bg-deep group-hover:text-white"
         } ${compact ? "w-11" : ""}`}
       >
@@ -105,15 +109,21 @@ export function CallButton({
   href,
   label,
   className = "",
+  onDark = false,
 }: {
   href: string;
   label: string;
   className?: string;
+  onDark?: boolean;
 }) {
   return (
     <a
       href={href}
-      className={`group ${labelBase} gap-2.5 border border-charcoal/15 bg-white text-charcoal hover:border-deep hover:text-deep ${focus} ${className}`}
+      className={`group ${labelBase} gap-2.5 ${
+        onDark
+          ? "border border-white/25 text-white hover:border-care-100 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white"
+          : `border border-charcoal/15 bg-white text-charcoal hover:border-deep hover:text-deep ${focus}`
+      } ${className}`}
     >
       <PhoneIcon className="h-5 w-5 transition-transform duration-300 motion-safe:group-hover:rotate-12" />
       {label}
@@ -143,27 +153,60 @@ export function LinkButton({
   );
 }
 
-/** Every button a section asks for, in the order the copy puts them. */
+/** Google Maps, once the clinic's share URL is in _global.md. Opens in a new tab. */
+export function MapsButton({ href, label, className = "" }: { href: string; label: string; className?: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`group inline-flex items-stretch gap-1 rounded-lg ${focus} ${className}`}
+    >
+      <span className={`${labelBase} gap-2.5 bg-deep text-white group-hover:bg-deep-700`}>
+        <MapPinIcon className="h-5 w-5" />
+        {label}
+      </span>
+      <span className={`${squareBase} bg-care text-charcoal group-hover:bg-deep group-hover:text-white`}>
+        <ArrowUpRight className="h-5 w-5" />
+      </span>
+    </a>
+  );
+}
+
+/**
+ * Every button a section asks for, in the order the copy puts them. The Maps button leads
+ * when a section asks for it (Contact's first screen), and only once the URL is supplied.
+ */
 export function Actions({
   section,
   global,
   ctaLabel,
   className = "mt-8",
+  onDark = false,
+  onCare = false,
 }: {
   section: Section;
   global: Global;
   ctaLabel: string;
   className?: string;
+  onDark?: boolean;
+  onCare?: boolean;
 }) {
-  if (!section.cta && !section.call && !section.link) return null;
+  const mapsUrl = section.maps ? resolved(global.maps.url) : null;
+  if (!section.cta && !section.call && !section.link && !mapsUrl) return null;
   return (
     <div className={className}>
       <div className="flex flex-wrap items-stretch gap-3">
-        {section.cta ? <WhatsAppButton href={global.whatsapp} label={ctaLabel} /> : null}
-        {section.call ? <CallButton href={global.phone.tel} label={global.phone.callLabel} /> : null}
+        {mapsUrl && section.maps ? <MapsButton href={mapsUrl} label={section.maps} /> : null}
+        {section.cta ? <WhatsAppButton href={global.whatsapp} label={ctaLabel} onDark={onDark} onCare={onCare} /> : null}
+        {section.call ? (
+          <CallButton href={global.phone.tel} label={global.phone.callLabel} onDark={onDark} />
+        ) : null}
         {section.link ? <LinkButton href={section.link.href} label={section.link.label} /> : null}
       </div>
-      {section.beside ? <p className="mt-3.5 text-[0.9rem] text-hint">{section.beside}</p> : null}
+      {section.beside ? (
+        <p className={`mt-3.5 text-[0.9rem] ${onDark ? "text-white/75" : "text-hint"}`}>{section.beside}</p>
+      ) : null}
     </div>
   );
 }

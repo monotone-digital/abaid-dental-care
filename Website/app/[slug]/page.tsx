@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import PageSections from "@/components/PageSections";
+import ContentPage from "@/components/brand/page/ContentPage";
 import { getPage, getPages } from "@/lib/content";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -18,10 +18,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return page ? buildMetadata(page) : {};
 }
 
-export default async function ContentPage({ params }: Params) {
+export default async function Page({ params }: Params) {
   const { slug } = await params;
   const page = getPage(slug);
   if (!page) notFound();
 
-  return <PageSections page={page} />;
+  return <ContentPage page={page} />;
 }

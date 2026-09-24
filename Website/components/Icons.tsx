@@ -306,6 +306,22 @@ export const ChatIcon = (props: Props) => (
   </Svg>
 );
 
+/** A drop: bleeding. */
+export const DropIcon = (props: Props) => (
+  <Svg {...props}>
+    <path {...line} d="M12 3.2s-6 6.6-6 11a6 6 0 0 0 12 0c0-4.4-6-11-6-11Z" />
+    <path {...line} d="M9.2 14.6a2.9 2.9 0 0 0 2.6 2.7" />
+  </Svg>
+);
+
+/** A "P" in a rounded square: parking. */
+export const ParkingIcon = (props: Props) => (
+  <Svg {...props}>
+    <rect {...line} x="3.5" y="3.5" width="17" height="17" rx="4" />
+    <path {...line} d="M9.5 16.5v-9h3.2a2.7 2.7 0 0 1 0 5.4H9.5" />
+  </Svg>
+);
+
 /** A shield with a tick: something is covered. */
 export const ShieldCheckIcon = (props: Props) => (
   <Svg {...props}>

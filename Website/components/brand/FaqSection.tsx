@@ -25,14 +25,17 @@ export default function FaqSection({
   section,
   page,
   global,
+  picture,
 }: {
   section: Section;
   page: Page;
   global: Global;
+  /** The round photograph; by default the reception desk, straight on. */
+  picture?: { src: string; alt: string } | null;
 }) {
   if (!section.faqs.length) return null;
-  // The reception desk, straight on; any interior if the library changes.
-  const photo = interiors().find((src) => src.includes("17.30.33")) ?? interior(section.id);
+  const reception = interiors().find((src) => src.includes("17.30.33")) ?? interior(section.id);
+  const photo = picture ?? (reception ? { src: reception, alt: "Reception at Abaid Dental Care" } : null);
 
   return (
     <Band id={section.id}>
@@ -42,8 +45,8 @@ export default function FaqSection({
             <div className="w-full max-w-[18rem] rounded-full bg-care-100 p-3">
               <div className="relative aspect-square overflow-hidden rounded-full">
                 <Image
-                  src={photo}
-                  alt="Reception at Abaid Dental Care"
+                  src={photo.src}
+                  alt={photo.alt}
                   fill
                   sizes="17rem"
                   className="object-cover"

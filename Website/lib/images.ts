@@ -24,6 +24,9 @@ export const portrait = (index = 0): string | null => {
   if (index === 0 && primary) return primary;
   return manifest.portrait[index] ?? null;
 };
+/** A portrait by part of its file name, or null if no file matches. */
+export const portraitNamed = (part: string): string | null =>
+  manifest.portrait.find((src) => src.includes(part)) ?? null;
 export const exterior = (): string | null => first(manifest.exterior);
 export const treatment = (): string | null => first(manifest.treatment);
 export const interior = (seed: string): string | null => pick(manifest.interior, seed);
