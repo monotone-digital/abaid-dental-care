@@ -47,9 +47,9 @@ You are anaesthetised for the treatment itself.
 @visual: interior
 @note: Use an interior image where the screen is visible, if one exists.
 
-If you want to see what he is looking at, the camera puts your own tooth on the screen beside you while he explains it.
+If you want to see what the doctor is looking at, the camera puts your own tooth on the screen beside you while the doctor explains it.
 
-You are looking at the same picture he is.
+You are looking at the same picture the doctor is.
 
 ## What happens afterwards
 @id: afterwards

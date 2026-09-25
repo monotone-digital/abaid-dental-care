@@ -39,7 +39,10 @@ button labels, 404 copy, nav labels — read `docs/copy-rules.md`.
 Breaking any of these is a defect, not a style choice.
 
 * **Implants do not exist on this site.** No page, nav item, service entry, schema entry,
-link or mention. **Veneers are not offered** — never list them.
+link or mention. **Veneers are not offered** — never list them. One exception, approved by
+Uzair on 25 Sep 2026: the exterior photograph shows the whole shop sign, which lists
+"C.Implant" among Dr Abaid's credentials. It stays in the photograph only, never in text,
+alt text, metadata or schema.
 * **Never "painless" or "pain-free"**, anywhere, including alt text and metadata.
 * **Dr Abaid Khalil is a dentist who provides orthodontic treatment.** Never "orthodontist",
 never "specialist". Always "Dr Abaid Khalil, BDS, C.Orth" where credentials appear.
@@ -61,8 +64,12 @@ MCP (Nano Banana Pro). A generated picture never shows a dentist's face (gloved 
 back only), never shows staff or a second clinician, and never shows implants, veneers or
 framed certificates. No stock photography. No placeholder boxes.
 A `before-after` section with no images in its folder is omitted entirely.
-* **The clinic's shop sign lists "C.Implant".** Crop the exterior photograph so the sign is
-never legible (Contact keeps to the shopfront below it).
+* **The exterior photograph is shown whole, never cropped** (Uzair, 25 Sep 2026). It is the
+real photograph, retouched at his request: motorbikes and litter removed, the angle
+straightened, bright daylight, and the sign's Timing box redrawn with the site's hours (the
+painted sign says 10–12 and 6–8). The untouched original is in `Public/Images/Exterior/_original/`
+and the full-size retouch in `Public/Images/Site/_source/exterior-refined-full.png`.
+If the hours in `content/_global.md` change, the photograph's Timing box must change with them.
 
 ## Decided since the brief
 

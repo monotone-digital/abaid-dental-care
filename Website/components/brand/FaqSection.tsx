@@ -1,10 +1,10 @@
 import Image from "next/image";
 import type { Page, Section } from "@/lib/content";
 import type { Global } from "@/lib/global";
-import { interior, interiors } from "@/lib/images";
+import { site } from "@/lib/images";
 import Markdown from "../Markdown";
 import { ChevronDown } from "../Icons";
-import { Actions, Band, Heading, LinkButton } from "./ui";
+import { Actions, Band, Heading, LinkButton, Pill } from "./ui";
 
 /**
  * A button under an answer, shown with it when the question is opened; at Uzair's request
@@ -19,44 +19,37 @@ const ANSWER_LINKS: Record<string, { href: string; label: string }> = {
 /**
  * Accordion, after the reference's FAQ: hairline rows, a chevron per question. Native
  * <details>, first item open, so it works with no JavaScript and every answer stays in the
- * HTML. On wide screens a round photograph of the clinic's reception sits in the left column.
+ * HTML. After Uzair's reference (25 Sep 2026), on every page: a small "FAQ" pill with the logo
+ * heads the left column, and on wide screens a round picture of a tooth (generated, decorative,
+ * Site/faq-tooth) sits at the foot of it.
  */
 export default function FaqSection({
   section,
   page,
   global,
-  picture,
 }: {
   section: Section;
   page: Page;
   global: Global;
-  /** The round photograph; by default the reception desk, straight on. */
-  picture?: { src: string; alt: string } | null;
 }) {
   if (!section.faqs.length) return null;
-  const reception = interiors().find((src) => src.includes("17.30.33")) ?? interior(section.id);
-  const photo = picture ?? (reception ? { src: reception, alt: "Reception at Abaid Dental Care" } : null);
+  const tooth = site("faq-tooth");
 
   return (
     <Band id={section.id}>
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-        {photo ? (
-          <div className="hidden lg:col-span-4 lg:block">
-            <div className="w-full max-w-[18rem] rounded-full bg-care-100 p-3">
+      <div className="grid gap-6 lg:grid-cols-12 lg:gap-12">
+        <div className="flex flex-col justify-between gap-10 lg:col-span-4">
+          <Pill className="self-start">FAQ</Pill>
+          {tooth ? (
+            <div className="hidden w-full max-w-[15rem] rounded-full bg-care-100 p-3 lg:block">
               <div className="relative aspect-square overflow-hidden rounded-full">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  sizes="17rem"
-                  className="object-cover"
-                />
+                <Image src={tooth} alt="" fill sizes="15rem" className="object-cover" />
               </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
 
-        <div className={photo ? "lg:col-span-8" : "lg:col-span-12"}>
+        <div className="lg:col-span-8">
           <Heading>{section.heading}</Heading>
           {section.sub ? <p className="mt-4 text-[1.05rem] leading-[1.7] text-copy">{section.sub}</p> : null}
 

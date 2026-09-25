@@ -251,9 +251,14 @@ export function StepsSection({ section, page, global, layout }: Props & { layout
 
 /* ------------------------------------------------------------------ compare */
 
+/** "18 to 24 months" in a card's own words: the figure repeated large above it. */
+const DURATION = /(\d+ to \d+) (months)/;
+
 /**
  * Two options side by side, each labelled with words the copy already uses; any paragraph not
- * on a card follows as the conclusion, with the section's buttons.
+ * on a card follows as the conclusion, with the section's buttons. With `aside`, the two cards
+ * sit smaller on the left and the conclusion stands as a card on the right (PFM or zirconia,
+ * Uzair, 25 Sep 2026: the pictures were too large).
  */
 export function CompareSection({ section, page, global, layout }: Props & { layout: Of<"compare"> }) {
   const tone = layout.tone ?? "warm";
@@ -264,6 +269,71 @@ export function CompareSection({ section, page, global, layout }: Props & { layo
   const firstCard = Math.min(...layout.cards.flatMap((card) => card.paras));
   const intro = rest.filter((part) => parts.indexOf(part) < firstCard);
   const conclusion = rest.filter((part) => parts.indexOf(part) > firstCard);
+  const aside = !!layout.aside && conclusion.length > 0;
+
+  const cards = layout.cards.map((card, index) => {
+    const photo = picture(card.picture);
+    const dark = !!card.dark;
+    const words = card.paras.map((i) => parts[i]).filter(Boolean).join("\n\n");
+    const duration = card.figure ? DURATION.exec(words) : null;
+    return (
+      <article
+        key={index}
+        className={`flex flex-col rounded-3xl ${photo ? "p-3" : "p-6 sm:p-8"} ${dark ? "bg-deep" : cardGround(tone)}`}
+      >
+        {photo ? (
+          <Photo
+            picture={photo}
+            position={card.position}
+            className={`${aside ? "aspect-16/10" : "aspect-4/3"} rounded-2xl`}
+            sizes={aside ? "(max-width: 640px) 95vw, 30vw" : "(max-width: 640px) 95vw, 45vw"}
+          />
+        ) : null}
+        <div className={photo ? `px-3 pb-4 sm:px-5 sm:pb-5 ${aside ? "pt-5" : "pt-6"}` : ""}>
+          {card.label ? (
+            <div className="flex items-center gap-4">
+              {card.icon ? <IconWell icon={card.icon} tone={dark ? "deep" : "light"} /> : null}
+              <h3
+                className={`text-[1.5rem] leading-tight tracking-[-0.02em] sm:text-[1.75rem] ${
+                  dark ? "text-white" : "text-charcoal"
+                }`}
+              >
+                {card.label}
+              </h3>
+            </div>
+          ) : null}
+          {duration ? (
+            <p aria-hidden="true" className={`mt-8 flex items-baseline gap-2 ${dark ? "text-white" : "text-charcoal"}`}>
+              <span className="text-[2.8rem] font-light leading-none tracking-[-0.045em] sm:text-[3.4rem]">{duration[1]}</span>
+              <span className="text-[1rem] font-semibold">{duration[2]}</span>
+            </p>
+          ) : null}
+          <Prose tone={dark ? "deep" : tone} className={card.label || duration ? (duration ? "mt-4" : "mt-5") : ""}>
+            {words}
+          </Prose>
+        </div>
+      </article>
+    );
+  });
+
+  if (aside) {
+    return (
+      <Band id={section.id} tone={tone}>
+        <div className="max-w-[44rem]">
+          <Intro section={section} tone={tone} />
+          {intro.length ? <Prose tone={tone} className="mt-5">{intro.join("\n\n")}</Prose> : null}
+        </div>
+
+        <div className="mt-10 grid gap-3 sm:gap-4 lg:grid-cols-12">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:col-span-8">{cards}</div>
+          <div className="flex flex-col justify-between gap-8 rounded-3xl bg-care-100 p-6 sm:p-8 lg:col-span-4">
+            <Prose className={LEAD}>{conclusion.join("\n\n")}</Prose>
+            <Actions section={section} global={global} ctaLabel={page.ctaLabel} className="" />
+          </div>
+        </div>
+      </Band>
+    );
+  }
 
   return (
     <Band id={section.id} tone={tone}>
@@ -272,51 +342,10 @@ export function CompareSection({ section, page, global, layout }: Props & { layo
         {intro.length ? <Prose tone={tone} className="mt-5">{intro.join("\n\n")}</Prose> : null}
       </div>
 
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 sm:gap-4">
-        {layout.cards.map((card, index) => {
-          const photo = picture(card.picture);
-          const dark = !!card.dark;
-          return (
-            <article
-              key={index}
-              className={`flex flex-col rounded-3xl ${photo ? "p-3" : "p-6 sm:p-8"} ${dark ? "bg-deep" : cardGround(tone)}`}
-            >
-              {photo ? (
-                <Photo
-                  picture={photo}
-                  position={card.position}
-                  className="aspect-4/3 rounded-2xl"
-                  sizes="(max-width: 640px) 95vw, 45vw"
-                />
-              ) : null}
-              <div className={photo ? "px-3 pb-4 pt-6 sm:px-5 sm:pb-5" : ""}>
-                {card.label ? (
-                  <div className="flex items-center gap-4">
-                    {card.icon ? <IconWell icon={card.icon} tone={dark ? "deep" : "light"} /> : null}
-                    <h3
-                      className={`text-[1.5rem] leading-tight tracking-[-0.02em] sm:text-[1.75rem] ${
-                        dark ? "text-white" : "text-charcoal"
-                      }`}
-                    >
-                      {card.label}
-                    </h3>
-                  </div>
-                ) : null}
-                <Prose tone={dark ? "deep" : tone} className={card.label ? "mt-5" : ""}>
-                  {card.paras.map((i) => parts[i]).filter(Boolean).join("\n\n")}
-                </Prose>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+      <div className="mt-10 grid gap-3 sm:grid-cols-2 sm:gap-4">{cards}</div>
 
       {conclusion.length || section.cta || section.link ? (
-        <div
-          className={`mt-3 flex flex-wrap items-center justify-between gap-x-12 gap-y-6 rounded-3xl p-6 sm:mt-4 sm:p-8 ${
-            tone === "white" ? "bg-care-100" : "bg-care-100"
-          }`}
-        >
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-12 gap-y-6 rounded-3xl bg-care-100 p-6 sm:mt-4 sm:p-8">
           {conclusion.length ? (
             <Prose className={`max-w-[48rem] ${LEAD}`}>{conclusion.join("\n\n")}</Prose>
           ) : null}
@@ -483,11 +512,15 @@ export function StagesSection({ section, page, global, layout }: Props & { layou
 /**
  * Tooth removal's aftercare, "the most important section on this page": every instruction on
  * its own line, large enough to read at arm's length, never collapsed. The photograph stays in
- * view beside the list on wide screens.
+ * view beside the list on wide screens. Caps and bridges' and teeth cleaning's "what happens"
+ * use it too (Uzair, 25 Sep 2026), numbering only their steps (`count`); the paragraphs after
+ * the steps follow the list as notes.
  */
 export function ChecklistSection({ section, page, global, layout }: Props & { layout: Of<"checklist"> }) {
   const tone = layout.tone ?? "warm";
-  const parts = paragraphs(section.body);
+  const all = paragraphs(section.body);
+  const parts = layout.count ? all.slice(0, layout.count) : all;
+  const notes = layout.count ? all.slice(layout.count) : [];
   const photo = picture(layout.picture);
 
   return (
@@ -495,21 +528,34 @@ export function ChecklistSection({ section, page, global, layout }: Props & { la
       <Intro section={section} tone={tone} className="max-w-[46rem]" size="large" />
 
       <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-14">
-        <ol className="grid gap-3 lg:col-span-7">
-          {parts.map((part, index) => (
-            <li key={index} className={`flex items-start gap-5 rounded-3xl p-5 sm:gap-7 sm:p-7 ${cardGround(tone)}`}>
-              <span
-                aria-hidden="true"
-                className="w-10 shrink-0 text-[2.2rem] font-light leading-none tracking-[-0.05em] text-care sm:w-14 sm:text-[2.8rem]"
-              >
-                {stepNumber(index)}
-              </span>
-              <Prose tone={tone} className="pt-1 text-[1.2rem] leading-[1.55] sm:text-[1.35rem] [&_p]:leading-[1.55]">
-                {part}
-              </Prose>
-            </li>
-          ))}
-        </ol>
+        <div className="lg:col-span-7">
+          <ol className="grid gap-3">
+            {parts.map((part, index) => (
+              <li key={index} className={`flex items-start gap-5 rounded-3xl p-5 sm:gap-7 sm:p-7 ${cardGround(tone)}`}>
+                <span
+                  aria-hidden="true"
+                  className="w-10 shrink-0 text-[2.2rem] font-light leading-none tracking-[-0.05em] text-care sm:w-14 sm:text-[2.8rem]"
+                >
+                  {stepNumber(index)}
+                </span>
+                <Prose tone={tone} className="pt-1 text-[1.2rem] leading-[1.55] sm:text-[1.35rem] [&_p]:leading-[1.55]">
+                  {part}
+                </Prose>
+              </li>
+            ))}
+          </ol>
+          {notes.length ? (
+            <div className="mt-6 grid gap-3">
+              {notes.map((note, index) => (
+                <div key={index} className="rounded-3xl border border-charcoal/10 p-5 sm:px-7 sm:py-6">
+                  <Prose tone={tone} className="text-[1.05rem]">
+                    {note}
+                  </Prose>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
 
         {photo ? (
           <div className="lg:col-span-5">
@@ -526,6 +572,107 @@ export function ChecklistSection({ section, page, global, layout }: Props & { la
       </div>
 
       <Actions section={section} global={global} ctaLabel={page.ctaLabel} onCare={tone === "care"} />
+    </Band>
+  );
+}
+
+/* ------------------------------------------------------------------ terms */
+
+/** "Zirconia, single unit: if it breaks…" -> the label before the first colon, and the terms. */
+const termsOf = (paragraph: string) => {
+  const at = paragraph.indexOf(": ");
+  return at > 0 && at < 60 ? { label: paragraph.slice(0, at), terms: paragraph.slice(at + 2) } : null;
+};
+
+/**
+ * Caps and bridges, "If something goes wrong" (Uzair, 25 Sep 2026: set the hierarchy): plain,
+ * legible rows, as the content asks, never a badge. Each paragraph is split at its colon, so
+ * what it covers reads as the row's heading and the terms beside it; the words are the copy's,
+ * in its order, the quoted PFM sentence untouched.
+ */
+export function TermsSection({ section, page, global, layout }: Props & { layout: Of<"terms"> }) {
+  const tone = layout.tone ?? "warm";
+  const parts = paragraphs(section.body);
+
+  return (
+    <Band id={section.id} tone={tone}>
+      <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+        <div className="lg:col-span-4">
+          <Intro section={section} tone={tone} />
+          <Actions section={section} global={global} ctaLabel={page.ctaLabel} onCare={tone === "care"} />
+        </div>
+
+        <dl className={`rounded-3xl px-6 sm:px-8 lg:col-span-8 ${cardGround(tone)}`}>
+          {parts.map((part, index) => {
+            const row = termsOf(part);
+            return (
+              <div
+                key={index}
+                className="grid gap-2 border-b border-charcoal/10 py-6 last:border-b-0 sm:grid-cols-12 sm:gap-8 sm:py-7"
+              >
+                {row ? (
+                  <>
+                    <dt className="text-[1.15rem] font-semibold leading-snug text-charcoal sm:col-span-4">{row.label}</dt>
+                    {/* Plain text, not Markdown: the PFM terms are one quotation, which the Markdown
+                        renderer would turn into a pull quote, and every row should read alike. */}
+                    <dd className="text-pretty text-[1.05rem] leading-[1.7] text-copy sm:col-span-8">{row.terms}</dd>
+                  </>
+                ) : (
+                  <dd className="sm:col-span-12">
+                    <Prose tone={tone} className="text-[1.05rem]">
+                      {part}
+                    </Prose>
+                  </dd>
+                )}
+              </div>
+            );
+          })}
+        </dl>
+      </div>
+    </Band>
+  );
+}
+
+/* ------------------------------------------------------------------ text */
+
+/**
+ * Plain words, for sections that read best as prose (root canal's "Who needs a root canal",
+ * "How many visits it takes" and "Will it work"; Uzair, 25 Sep 2026: simpler, clearer). The
+ * heading on the left; on the right the paragraphs in their order, the one that answers the
+ * heading set large.
+ */
+export function TextSection({ section, page, global, layout }: Props & { layout: Of<"text"> }) {
+  const tone = layout.tone ?? "warm";
+  const parts = paragraphs(section.body);
+  const key = layout.emphasis === "last" ? parts.length - 1 : layout.emphasis === "first" ? 0 : -1;
+
+  return (
+    <Band id={section.id} tone={tone}>
+      <div className="grid gap-8 lg:grid-cols-12 lg:gap-14">
+        <Intro section={section} tone={tone} className="lg:col-span-5" />
+        <div className="lg:col-span-7">
+          <div className="grid gap-5">
+            {parts.map((part, index) =>
+              index === key ? (
+                <Prose
+                  key={index}
+                  tone={tone}
+                  className={`border-l-2 border-care pl-5 text-[1.5rem] leading-[1.3] tracking-[-0.015em] text-charcoal sm:pl-6 sm:text-[1.75rem] [&_p]:leading-[1.3] ${
+                    index > 0 ? "mt-3" : ""
+                  } ${index < parts.length - 1 ? "mb-3" : ""}`}
+                >
+                  {part}
+                </Prose>
+              ) : (
+                <Prose key={index} tone={tone} className="text-[1.08rem]">
+                  {part}
+                </Prose>
+              ),
+            )}
+          </div>
+          <Actions section={section} global={global} ctaLabel={page.ctaLabel} onCare={tone === "care"} />
+        </div>
+      </div>
     </Band>
   );
 }
@@ -573,25 +720,48 @@ export function FeatureSection({ section, page, global, layout }: Props & { layo
 
 /* ------------------------------------------------------------------ pair */
 
-/** A consented before/after pair, captioned "Before" and "After". */
-export function PairFigure({ slug, title, className = "" }: { slug: string; title: string; className?: string }) {
-  const pair = firstPair(slug);
-  if (!pair) return null;
+/**
+ * One consented before/after pair, as a card: the two photographs landscape (the clinic's are
+ * all wide mouth shots), each with a small "Before" or "After" label on it. `stacked` puts
+ * After under Before, for a narrow column; otherwise they sit side by side from 640px up.
+ */
+export function PairCard({
+  pair,
+  title,
+  stacked = false,
+  ground = "white",
+  className = "",
+}: {
+  pair: { before: string; after: string };
+  title: string;
+  stacked?: boolean;
+  /** The card's own ground: white on the warm bands, warm on the white ones. */
+  ground?: "white" | "warm";
+  className?: string;
+}) {
   return (
-    <div className={`grid grid-cols-2 gap-3 ${className}`}>
+    <div
+      className={`grid gap-2 rounded-3xl p-2 sm:p-2.5 ${ground === "warm" ? "bg-warm" : "bg-white"} ${
+        stacked ? "" : "sm:grid-cols-2"
+      } ${className}`}
+    >
       {(
         [
           ["Before", pair.before],
           ["After", pair.after],
         ] as const
       ).map(([label, src]) => (
-        <figure key={label} className="rounded-3xl bg-white p-2.5">
-          <div className="relative aspect-4/5 overflow-hidden rounded-2xl bg-care-100">
-            <Image src={src} alt={`${title} ${label.toLowerCase()}`} fill sizes="(max-width: 1024px) 45vw, 22vw" className="object-cover" />
-          </div>
+        <figure key={label} className="relative aspect-16/9 overflow-hidden rounded-2xl bg-care-100">
+          <Image
+            src={src}
+            alt={`${title} ${label.toLowerCase()}`}
+            fill
+            sizes={stacked ? "(max-width: 1024px) 95vw, 45vw" : "(max-width: 640px) 95vw, 45vw"}
+            className="object-cover"
+          />
           <figcaption
-            className={`px-2 pb-1 pt-3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] ${
-              label === "After" ? "text-deep" : "text-hint"
+            className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] ${
+              label === "After" ? "bg-deep text-white" : "bg-white/90 text-charcoal"
             }`}
           >
             {label}
@@ -600,6 +770,22 @@ export function PairFigure({ slug, title, className = "" }: { slug: string; titl
       ))}
     </div>
   );
+}
+
+/** The page's first consented pair, as a card; nothing if there is none. */
+export function PairFigure({
+  slug,
+  title,
+  ground,
+  className = "",
+}: {
+  slug: string;
+  title: string;
+  ground?: "white" | "warm";
+  className?: string;
+}) {
+  const pair = firstPair(slug);
+  return pair ? <PairCard pair={pair} title={title} stacked ground={ground} className={className} /> : null;
 }
 
 /** The words beside the page's first consented before/after pair; words alone if there is none. */
@@ -621,7 +807,8 @@ export function PairSection({ section, page, global, layout }: Props & { layout:
           <PairFigure
             slug={page.slug}
             title={page.title}
-            className={`lg:col-span-6 ${tone === "white" ? "[&_figure]:bg-warm" : ""}`}
+            ground={tone === "white" ? "warm" : "white"}
+            className="lg:col-span-6"
           />
         ) : null}
       </div>

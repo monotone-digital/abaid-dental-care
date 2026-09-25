@@ -111,6 +111,12 @@ Most root canals need a cap afterwards, which is from PKR 5,000.
 @visual: none
 @note: No star rating in any form. Never pull "Best Dental facility in Faisalabad" out of the quote.
 
+## Before and after
+@id: before-after
+@type: before-after
+@visual: before-after
+@note: Added 25 Sep 2026 at Uzair's request, at the end before the FAQ. Pairs from /public/images/before-after/root-canal/. Only images with documented, case-specific consent. If the folder is empty, omit this section.
+
 ## Questions you might have
 @id: faq
 @type: faq

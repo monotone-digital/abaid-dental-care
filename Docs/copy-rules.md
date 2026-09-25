@@ -31,7 +31,9 @@ treatment terms ("root canal", "braces", "scaling").
 
 ## Never mention
 
-- **Implants** or **veneers**, in any form.
+- **Implants** or **veneers**, in any form. One exception, approved by Uzair on 25 Sep 2026:
+  the exterior photograph shows the whole shop sign, "C.Implant" included. It never goes
+  into text, alt text or schema.
 - **Star ratings, review counts**, "rated X", "over N reviews". One exception, approved
   by Uzair on 24 Sep 2026: the clinic's overall **Google rating, ★ 4.7/5**, on the Dr Abaid
   card. It is never shown next to a review, never given a review count, and never put in the

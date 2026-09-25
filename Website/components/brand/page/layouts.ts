@@ -12,7 +12,16 @@ import type { IconKey, Tone } from "./parts";
 /** A hero card scrolls to a section further down and is titled with that section's heading. */
 export type HeroCard =
   /** Care Teal, with a figure read from the section (its @sub or body). */
-  | { kind: "figure"; target: string; from: "sub" | "body"; monthly?: boolean }
+  | {
+      kind: "figure";
+      target: string;
+      from: "sub" | "body";
+      monthly?: boolean;
+      /** Soft rings in the top right corner, as the colour bands have. */
+      rings?: boolean;
+      /** The card's own title, where Uzair named one; otherwise the section's heading. */
+      title?: string;
+    }
   | { kind: "photo"; target: string; picture: string; position?: string };
 
 export type HeroLayout = { main: string; mainPosition?: string; cards: HeroCard[] };
@@ -26,6 +35,8 @@ export type CompareCard = {
   picture?: string;
   position?: string;
   dark?: boolean;
+  /** Repeat the card's "18 to 24 months" large above it (aria-hidden: the paragraph says it). */
+  figure?: boolean;
 };
 
 export type SectionLayout =
@@ -52,7 +63,8 @@ export type SectionLayout =
       position?: string;
       direction: "row" | "column";
     }
-  | { kind: "compare"; tone?: Tone; cards: CompareCard[] }
+  /** `aside`: the conclusion stands as a card to the right of the two, not a strip below them. */
+  | { kind: "compare"; tone?: Tone; cards: CompareCard[]; aside?: boolean }
   /** One paragraph (the answer) set large; the others as cards beside it. */
   | {
       kind: "answer";
@@ -65,7 +77,12 @@ export type SectionLayout =
     }
   /** Paragraphs `steps` as a payment timeline, figures picked out; the rest as notes. */
   | { kind: "stages"; tone?: Tone; steps: number[] }
-  | { kind: "checklist"; picture?: string; position?: string; tone?: Tone }
+  /** Numbered, one line each; with `count`, only the first `count` are numbered, the rest follow as notes. */
+  | { kind: "checklist"; picture?: string; position?: string; tone?: Tone; count?: number }
+  /** "Label: terms." paragraphs as rows, the label (the words before the colon) beside its terms. */
+  | { kind: "terms"; tone?: Tone }
+  /** Plain words: the heading on the left, the paragraphs on the right, one of them set large. */
+  | { kind: "text"; tone?: Tone; emphasis?: "first" | "last" }
   /** Deep Teal band, the words on the left, a photograph bleeding off the right edge. */
   | { kind: "feature"; picture: string; position?: string }
   | { kind: "cost"; render?: string }
@@ -84,8 +101,6 @@ export type SectionLayout =
 export type PageLayout = {
   hero?: HeroLayout;
   sections: Record<string, SectionLayout>;
-  /** The round photograph beside the FAQ. */
-  faq?: string;
   /** A photograph beside the reviews, when the copy asks for one. */
   reviews?: string;
   signpost?: string[];
@@ -97,7 +112,7 @@ export const LAYOUTS: Record<string, PageLayout> = {
       main: "hero-first-visit",
       mainPosition: "60% 40%",
       cards: [
-        { kind: "figure", target: "cost", from: "body" },
+        { kind: "figure", target: "cost", from: "body", rings: true, title: "Consultation Fee" },
         { kind: "photo", target: "arrive", picture: "interior:treatment-room", position: "50% 60%" },
       ],
     },
@@ -110,11 +125,10 @@ export const LAYOUTS: Record<string, PageLayout> = {
         dark: 2,
       },
       injection: { kind: "feature", picture: "gel-swab", position: "45% 55%" },
-      "see-it": { kind: "screen", picture: "fv-screen", screen: "fv-screen-tooth", position: "72% 45%" },
+      "see-it": { kind: "screen", picture: "fv-screen", position: "30% 45%" },
       afterwards: { kind: "split", picture: "fv-aftercare", tone: "white", flip: true },
       cost: { kind: "receipt" },
     },
-    faq: "interior:reception",
   },
 
   treatments: {
@@ -132,7 +146,6 @@ export const LAYOUTS: Record<string, PageLayout> = {
       "final-cost": { kind: "steps", tone: "care", count: 3, direction: "row" },
       paying: { kind: "paying" },
     },
-    faq: "interior:reception-side",
   },
 
   "caps-and-bridges": {
@@ -146,25 +159,19 @@ export const LAYOUTS: Record<string, PageLayout> = {
     },
     sections: {
       who: { kind: "cards", columns: 3, icons: ["cap", "bridge", "rootCanal"] },
-      process: {
-        kind: "steps",
-        tone: "care",
-        count: 3,
-        direction: "column",
-        picture: "caps-scan",
-        position: "40% 50%",
-      },
+      // As tooth removal's "What to do afterwards" (Uzair, 25 Sep 2026).
+      process: { kind: "checklist", picture: "caps-scan", position: "40% 50%", tone: "white", count: 3 },
       materials: {
         kind: "compare",
+        aside: true,
         cards: [
           { label: "PFM", paras: [0], picture: "crown-pfm" },
           { label: "Zirconia", paras: [1], picture: "crown-zirconia" },
         ],
       },
       cost: { kind: "cost", render: "hover-caps-and-bridges" },
-      warranty: { kind: "cards", tone: "white", columns: 2, icons: ["shield", "shield", "shield", "recement"] },
+      warranty: { kind: "terms", tone: "white" },
     },
-    faq: "interior:reception-side",
   },
 
   "braces-and-aligners": {
@@ -172,13 +179,21 @@ export const LAYOUTS: Record<string, PageLayout> = {
       main: "hero-braces",
       mainPosition: "50% 35%",
       cards: [
+        { kind: "figure", target: "payment", from: "body", monthly: true, rings: true },
         { kind: "photo", target: "compare", picture: "aligner-hand", position: "50% 60%" },
-        { kind: "figure", target: "payment", from: "body", monthly: true },
       ],
     },
     signpost: ["braces-closeup", "braces-child"],
     sections: {
-      adults: { kind: "pair" },
+      // No before/after here any more (Uzair, 25 Sep 2026): the pair is in "Before and after".
+      adults: {
+        kind: "compare",
+        tone: "white",
+        cards: [
+          { label: "Braces", paras: [0], icon: "braces", figure: true },
+          { label: "Clear aligners", paras: [1], icon: "aligner", figure: true },
+        ],
+      },
       children: { kind: "split", picture: "child-consult", tone: "care", position: "50% 40%", tall: true },
       compare: {
         kind: "compare",
@@ -190,7 +205,6 @@ export const LAYOUTS: Record<string, PageLayout> = {
       cost: { kind: "cost" },
       payment: { kind: "stages", tone: "white", steps: [0, 1, 2] },
     },
-    faq: "interior:waiting",
   },
 
   "root-canal": {
@@ -203,7 +217,8 @@ export const LAYOUTS: Record<string, PageLayout> = {
       ],
     },
     sections: {
-      who: { kind: "answer", lead: "last", icons: ["rootCanal", "extraction"] },
+      // who, visits, outcome: plain words, one line set large (Uzair, 25 Sep 2026: simpler).
+      who: { kind: "text", emphasis: "last" },
       process: {
         kind: "steps",
         tone: "white",
@@ -212,9 +227,9 @@ export const LAYOUTS: Record<string, PageLayout> = {
         picture: "fv-xray",
         position: "50% 50%",
       },
-      visits: { kind: "cards", columns: 3, icons: ["next", "clock", "rootCanal"] },
+      visits: { kind: "text", emphasis: "first" },
       pain: { kind: "feature", picture: "gel-swab", position: "45% 55%" },
-      outcome: { kind: "cards", tone: "white", columns: 3, lead: 1, dark: 2 },
+      outcome: { kind: "text", tone: "white", emphasis: "first" },
       compare: {
         kind: "compare",
         cards: [
@@ -225,7 +240,6 @@ export const LAYOUTS: Record<string, PageLayout> = {
       cost: { kind: "cost", render: "hover-root-canal" },
     },
     reviews: "interior:treatment-room",
-    faq: "interior:reception",
   },
 
   "tooth-removal": {
@@ -258,7 +272,6 @@ export const LAYOUTS: Record<string, PageLayout> = {
         ],
       },
     },
-    faq: "interior:corridor",
   },
 
   "teeth-cleaning": {
@@ -272,14 +285,8 @@ export const LAYOUTS: Record<string, PageLayout> = {
     },
     sections: {
       why: { kind: "answer", tone: "white", plain: true },
-      process: {
-        kind: "steps",
-        tone: "care",
-        count: 3,
-        direction: "column",
-        picture: "cleaning-scaler",
-        position: "50% 45%",
-      },
+      // As tooth removal's "What to do afterwards" (Uzair, 25 Sep 2026).
+      process: { kind: "checklist", picture: "cleaning-scaler", position: "50% 45%", count: 2 },
       enamel: { kind: "answer", tone: "white", icons: ["check", "clock"] },
       cost: { kind: "cost", render: "hover-teeth-cleaning" },
     },
@@ -328,10 +335,10 @@ export const LAYOUTS: Record<string, PageLayout> = {
     },
     sections: {
       process: { kind: "cards", columns: 3, icons: ["filling", "clock", "gel"], dark: 2 },
-      "front-teeth": { kind: "pair", tone: "white" },
+      // Words only (Uzair, 25 Sep 2026): its before/after pair moved down to "Before and after".
+      "front-teeth": { kind: "text", tone: "white", emphasis: "first" },
       cost: { kind: "cost", render: "hover-fillings" },
     },
-    faq: "interior:treatment-room",
   },
 
   about: {
@@ -341,7 +348,6 @@ export const LAYOUTS: Record<string, PageLayout> = {
       "what-we-do": { kind: "practice", picture: "treatment" },
       "find-us": { kind: "find-us" },
     },
-    faq: "interior:reception",
   },
 
   contact: {

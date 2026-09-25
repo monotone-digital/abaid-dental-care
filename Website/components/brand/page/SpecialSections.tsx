@@ -13,7 +13,7 @@ import { FIGURES } from "../DoctorSection";
 import type { SectionLayout } from "./layouts";
 import { Band, IconWell, Intro, Photo, Prose, type IconKey, type Props } from "./parts";
 import { picture } from "./pictures";
-import { PairFigure } from "./TextSections";
+import { PairCard } from "./TextSections";
 
 type Of<K extends SectionLayout["kind"]> = Extract<SectionLayout, { kind: K }>;
 
@@ -44,11 +44,12 @@ function Today({ global, className = "" }: { global: Global; className?: string 
  * "You can see it yourself", after the reference's closing panel (third design, 24 Sep 2026;
  * Uzair asked for it again, and for its WhatsApp button to go, removed from the content): a
  * Care Teal tint inset from the page, the words on the left, and on the right the photograph
- * of a patient looking at her own tooth on the screen, running to the panel's edges. Two small
- * white cards float over it, as the reference's do: the tooth from that same screen (cropped
- * from the photograph, Site/fv-screen-tooth), labelled with the first paragraph's own words, and
- * Dr Abaid's name and credentials. Both restate the page, so they are hidden from screen
- * readers. The second paragraph, the point of the section, is set large under the first.
+ * of a patient watching his own tooth on the screen while the camera is in his mouth (Uzair's
+ * brief, 25 Sep 2026: a young man in western clothes), running to the panel's edges. A small
+ * white card floats over it, as the reference's do: Dr Abaid's name and credentials, hidden from
+ * screen readers because it restates the page. A second card, the tooth from the screen
+ * (`layout.screen`), shows only if a layout names one; Uzair had it taken off First Visit on
+ * 25 Sep 2026. The second paragraph, the point of the section, is set large under the first.
  */
 export function ScreenSection({ section, page, global, layout }: Props & { layout: Of<"screen"> }) {
   const photo = picture(layout.picture);
@@ -93,11 +94,12 @@ export function ScreenSection({ section, page, global, layout }: Props & { layou
                 />
               </div>
 
-              {/* The tooth from the screen. On a phone it sits across the photograph's top edge. */}
+              {/* The tooth from the screen. On a phone it sits across the photograph's top edge; wider,
+                  at the bottom left, so it never covers the patient's face. */}
               {screen ? (
                 <div
                   aria-hidden="true"
-                  className="absolute -top-11 left-5 w-28 rounded-2xl bg-white p-1.5 shadow-[0_18px_40px_-18px_rgb(35_31_32/0.45)] sm:left-6 sm:top-6 sm:w-40 sm:p-2 lg:-left-8 lg:top-12 lg:w-52"
+                  className="absolute -top-11 left-5 w-28 rounded-2xl bg-white p-1.5 shadow-[0_18px_40px_-18px_rgb(35_31_32/0.45)] sm:bottom-6 sm:left-6 sm:top-auto sm:w-40 sm:p-2 lg:-left-8 lg:bottom-10 lg:w-52"
                 >
                   <div className="relative aspect-6/5 overflow-hidden rounded-xl bg-charcoal">
                     <Image src={screen.src} alt="" fill sizes="13rem" className="object-cover" />
@@ -570,7 +572,7 @@ export function PracticeSection({ section, page, global, layout }: Props & { lay
 /**
  * About, "Where you'll find us": the address (@sub) and the week's hours, with today's hours
  * live; the photograph of the clinic from the street stands where a map would, until the
- * Google Maps embed is supplied.
+ * Google Maps embed is supplied. The photograph is shown whole (Uzair, 25 Sep 2026).
  */
 export function FindUsSection({ section, page, global }: Props) {
   const photo = picture("exterior");
@@ -585,12 +587,8 @@ export function FindUsSection({ section, page, global }: Props) {
           <Actions section={section} global={global} ctaLabel={page.ctaLabel} />
         </div>
         {photo ? (
-          <div className="lg:col-span-6 lg:self-stretch">
-            <Photo
-              picture={photo}
-              className="aspect-4/3 lg:aspect-auto lg:h-full lg:min-h-[28rem]"
-              position="50% 60%"
-            />
+          <div className="lg:col-span-6 lg:self-center">
+            <Photo picture={photo} className="aspect-4/3" />
           </div>
         ) : null}
       </div>
@@ -656,35 +654,35 @@ export function HoursSection({ section, page, global }: Props) {
   );
 }
 
-/** Contact, "Getting here": the exterior photograph large at the top; the words are its caption. */
+/**
+ * Contact, "Getting here": the exterior photograph large at the top, whole, and the words under
+ * it as its caption, both held to one width so the photograph never fills a laptop screen.
+ */
 export function ExteriorSection({ section, page, global }: Props) {
   const photo = picture("exterior");
   const parts = paragraphs(section.body);
   const icons: IconKey[] = ["check", "pin", "parking"];
 
   return (
-    <Band id={section.id}>
+    <Band id={section.id} className="mx-auto max-w-[56rem]">
       {photo ? (
         <Photo
           picture={photo}
-          // The shop sign lists "C.Implant" among the credentials, and implants are never mentioned on
-          // this site, so the frame keeps to the shopfront below the sign (24 Sep 2026).
-          className="aspect-4/3 sm:aspect-2/1 lg:aspect-auto lg:h-[28rem]"
-          position="50% 100%"
-          sizes="(max-width: 1024px) 95vw, 80vw"
+          // The whole shopfront, sign included. The sign lists "C.Implant": Uzair chose to show it
+          // (25 Sep 2026, in CLAUDE.md). The site's own words still never mention implants.
+          className="aspect-4/3"
+          sizes="(max-width: 1024px) 95vw, 56rem"
         />
       ) : null}
-      <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:gap-14">
-        <Intro section={section} className="lg:col-span-4" />
-        <ul className="grid gap-3 sm:grid-cols-3 sm:gap-4 lg:col-span-8">
-          {parts.map((part, index) => (
-            <li key={index} className="flex flex-col rounded-3xl bg-white p-6">
-              <IconWell icon={icons[index] ?? "check"} />
-              <Prose className="mt-6 sm:mt-auto sm:pt-8">{part}</Prose>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Intro section={section} className="mt-10" />
+      <ul className="mt-8 grid gap-3 sm:grid-cols-3 sm:gap-4">
+        {parts.map((part, index) => (
+          <li key={index} className="flex flex-col rounded-3xl bg-white p-6">
+            <IconWell icon={icons[index] ?? "check"} />
+            <Prose className="mt-6 sm:mt-auto sm:pt-8">{part}</Prose>
+          </li>
+        ))}
+      </ul>
       <Actions section={section} global={global} ctaLabel={page.ctaLabel} />
     </Band>
   );
@@ -746,61 +744,36 @@ export function SignpostSection({ section, page, global, pictures = [] }: Props 
 
 /* ------------------------------------------------------------------ before and after */
 
-/** Every consented pair for the page. No pairs: the section is omitted, heading and all. */
-export function BeforeAfterGallery({ section, page, global }: Props) {
-  const pairs = beforeAfter(page.slug);
+/**
+ * "Before and after", at the end of the page before the questions (Uzair, 25 Sep 2026: a simple
+ * design). Every consented pair for the page, one card each, Before beside After, at the size
+ * Uzair approved: the heading on the left, the pairs in the two thirds on the right, one under
+ * another when there are several. Pairs a section higher up already shows (`skip`) are not
+ * repeated. No pairs left: the section is omitted, heading and all.
+ */
+export function BeforeAfterGallery({ section, page, global, skip = 0 }: Props & { skip?: number }) {
+  const pairs = beforeAfter(page.slug).slice(skip);
   if (!pairs.length) return null;
-
-  // One pair: beside the heading, large, rather than one small card on its own.
-  if (pairs.length === 1) {
-    return (
-      <Band id={section.id}>
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-14">
-          <div className="lg:col-span-5">
-            <Intro section={section} />
-            <Actions section={section} global={global} ctaLabel={page.ctaLabel} />
-          </div>
-          <PairFigure slug={page.slug} title={page.title} className="lg:col-span-7" />
-        </div>
-      </Band>
-    );
-  }
+  const one = pairs.length === 1;
 
   return (
-    <Band id={section.id}>
-      <Intro section={section} className="max-w-[40rem]" />
-      <ul className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {pairs.map((pair) => (
-          <li key={pair.id} className="grid grid-cols-2 gap-2 rounded-3xl bg-white p-3">
-            {(
-              [
-                ["Before", pair.before],
-                ["After", pair.after],
-              ] as const
-            ).map(([label, src]) => (
-              <figure key={label}>
-                <div className="relative aspect-4/5 overflow-hidden rounded-2xl bg-care-100">
-                  <Image
-                    src={src}
-                    alt={`${page.title} ${label.toLowerCase()}`}
-                    fill
-                    sizes="(max-width: 640px) 45vw, 20vw"
-                    className="object-cover"
-                  />
-                </div>
-                <figcaption
-                  className={`px-1.5 pb-1 pt-3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] ${
-                    label === "After" ? "text-deep" : "text-hint"
-                  }`}
-                >
-                  {label}
-                </figcaption>
-              </figure>
-            ))}
-          </li>
-        ))}
-      </ul>
-      <Actions section={section} global={global} ctaLabel={page.ctaLabel} />
+    <Band id={section.id} tone="white">
+      <div className={`grid gap-8 lg:grid-cols-12 lg:gap-14 ${one ? "lg:items-center" : ""}`}>
+        <div className="lg:col-span-4">
+          {/* With several pairs, the heading stays in view beside them on wide screens. */}
+          <div className={one ? "" : "lg:sticky lg:top-28"}>
+            <Intro section={section} tone="white" />
+            <Actions section={section} global={global} ctaLabel={page.ctaLabel} />
+          </div>
+        </div>
+        <ul className="grid gap-4 lg:col-span-8">
+          {pairs.map((pair) => (
+            <li key={pair.id}>
+              <PairCard pair={pair} title={page.title} ground="warm" />
+            </li>
+          ))}
+        </ul>
+      </div>
     </Band>
   );
 }

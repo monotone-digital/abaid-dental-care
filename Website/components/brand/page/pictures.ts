@@ -38,7 +38,7 @@ const GENERATED: Record<string, string> = {
   "aligner-hand": "A clear aligner held in front of a smile",
   "braces-closeup": "A smile with braces",
   "fillings-tray": "A shade guide, filling material and a curing light on a tray",
-  "fv-screen": "A patient looking at a picture of her own tooth on a screen beside the chair",
+  "fv-screen": "A patient looking at a picture of his own tooth on a screen beside the chair",
   "fv-screen-tooth": "A back tooth shown large on the screen beside the chair",
   "fv-xray": "A dental X-ray on a screen",
   "fv-aftercare": "A strip of capsules, a strip of tablets and a glass of water",

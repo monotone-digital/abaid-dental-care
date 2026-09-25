@@ -88,6 +88,12 @@ What it leaves is a gap. Filling that later means a bridge, which costs more tha
 
 Where a tooth can be saved, keeping it is usually the better of the two. Dr Abaid will tell you honestly which one your tooth is a case for, and if it cannot be saved he will say so.
 
+## Before and after
+@id: before-after
+@type: before-after
+@visual: before-after
+@note: Added 25 Sep 2026 at Uzair's request, at the end before the FAQ. Pairs from /public/images/before-after/tooth-removal/. Only images with documented, case-specific consent. If the folder is empty, omit this section.
+
 ## Questions you might have
 @id: faq
 @type: faq

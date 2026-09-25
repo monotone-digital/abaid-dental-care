@@ -61,6 +61,12 @@ The consultation is PKR 300, the same as any other treatment here.
 @reviews: usama-n
 @visual: interior
 
+## Before and after
+@id: before-after
+@type: before-after
+@visual: before-after
+@note: Added 25 Sep 2026 at Uzair's request, at the end before the FAQ. Pairs from /public/images/before-after/teeth-cleaning/. Only images with documented, case-specific consent. If the folder is empty, omit this section.
+
 ## Questions you might have
 @id: faq
 @type: faq

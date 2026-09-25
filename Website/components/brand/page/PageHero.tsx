@@ -30,8 +30,15 @@ function Card({ card, sections }: { card: HeroCard; sections: Section[] }) {
     if (!parts) return null;
     const [currency, amount] = parts.figure.split(" ");
     return (
-      <a href={`#${target.id}`} className={`${base} flex-col justify-between bg-care p-5 sm:p-8`}>
-        <span className={CARD_TITLE}>{target.heading}</span>
+      <a href={`#${target.id}`} className={`${base} isolate flex-col justify-between bg-care p-5 sm:p-8`}>
+        {card.rings ? (
+          // Soft rings in the top right corner, as the colour bands have (Uzair, 25 Sep 2026).
+          <span
+            aria-hidden="true"
+            className="absolute -right-32 -top-32 -z-10 h-[26rem] w-[26rem] rounded-full bg-[repeating-radial-gradient(circle,transparent_0_3.5rem,rgb(255_255_255/0.14)_3.5rem_calc(3.5rem_+_1px))]"
+          />
+        ) : null}
+        <span className={CARD_TITLE}>{card.title ?? target.heading}</span>
         {/* The figure restates the section it opens, so it is read there, not here. */}
         <span aria-hidden="true" className="block pr-10 text-charcoal">
           <span className="block text-[0.85rem] font-semibold sm:text-[0.95rem]">

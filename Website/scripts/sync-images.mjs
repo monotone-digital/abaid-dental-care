@@ -107,7 +107,7 @@ for (const file of listFiles(siteDir)) {
   manifest.site[slug(path.basename(file, path.extname(file)))] = url;
 }
 
-// Before/after: <Treatment>/<Case N>/ holds the pair, sorted by file name — first before, second after.
+// Before/after: <Treatment>/<Case N>/ holds the pair, named "before" and "after".
 const beforeAfterDir = path.join(source, "Before-After");
 for (const treatment of listDirs(beforeAfterDir)) {
   const key = BEFORE_AFTER_SLUGS[slug(treatment)];
@@ -121,11 +121,16 @@ for (const treatment of listDirs(beforeAfterDir)) {
     const caseDir = path.join(treatmentDir, caseName);
     const files = listFiles(caseDir);
     if (files.length < 2) continue;
+    // "Before.avif" / "fillings-after.avif": the names say which is which. Sorted by name,
+    // "After" would come first, so the order is only the fallback for unlabelled files.
+    const named = (word) => files.find((f) => new RegExp(`(^|[^a-z])${word}([^a-z]|$)`, "i").test(f));
+    const before = named("before") ?? files[0];
+    const after = named("after") ?? files.find((f) => f !== before);
     const parts = [key, slug(caseName)];
     cases.push({
       id: slug(caseName),
-      before: copy(caseDir, files[0], parts),
-      after: copy(caseDir, files[1], parts),
+      before: copy(caseDir, before, parts),
+      after: copy(caseDir, after, parts),
     });
   }
   if (cases.length) manifest.beforeAfter[key] = cases;

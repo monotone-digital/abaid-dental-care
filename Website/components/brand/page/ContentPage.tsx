@@ -31,6 +31,8 @@ import {
   SplitSection,
   StagesSection,
   StepsSection,
+  TermsSection,
+  TextSection,
 } from "./TextSections";
 
 /**
@@ -51,10 +53,14 @@ const HIDDEN_ON: Record<string, Set<string>> = {
 function Body({ section, page, global, layout }: { section: Section; page: Page; global: Global; layout: PageLayout }) {
   const props = { section, page, global };
 
-  if (section.type === "faq") return <FaqSection {...props} picture={picture(layout.faq)} />;
+  if (section.type === "faq") return <FaqSection {...props} />;
   if (section.type === "reviews") return <ReviewsSection {...props} picture={picture(layout.reviews)} />;
   if (section.type === "signpost") return <SignpostSection {...props} pictures={layout.signpost} />;
-  if (section.type === "before-after") return <BeforeAfterGallery {...props} />;
+  if (section.type === "before-after") {
+    // A pair a section higher up already shows (fillings' front teeth) is not repeated here.
+    const shown = page.sections.some((s) => layout.sections[s.id]?.kind === "pair") ? 1 : 0;
+    return <BeforeAfterGallery {...props} skip={shown} />;
+  }
   if (section.type === "map") return <FindUsSection {...props} />;
 
   const own = layout.sections[section.id];
@@ -73,6 +79,10 @@ function Body({ section, page, global, layout }: { section: Section; page: Page;
       return <StagesSection {...props} layout={own} />;
     case "checklist":
       return <ChecklistSection {...props} layout={own} />;
+    case "terms":
+      return <TermsSection {...props} layout={own} />;
+    case "text":
+      return <TextSection {...props} layout={own} />;
     case "feature":
       return <FeatureSection {...props} layout={own} />;
     case "cost":
