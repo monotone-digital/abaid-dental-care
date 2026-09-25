@@ -26,6 +26,7 @@ export const metadata: Metadata = {
     locale: "en_PK",
     ...(resolved(global.og.image) ? { images: [resolved(global.og.image) as string] } : {}),
   },
+  twitter: { card: resolved(global.og.image) ? "summary_large_image" : "summary" },
 };
 
 /** Every page, on the brand of September 2026: Urbanist, Warm White, the header, footer and phone bar. */

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ContentPage from "@/components/brand/page/ContentPage";
+import PageJsonLd from "@/components/JsonLd";
 import { getPage, getPages } from "@/lib/content";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -23,5 +24,10 @@ export default async function Page({ params }: Params) {
   const page = getPage(slug);
   if (!page) notFound();
 
-  return <ContentPage page={page} />;
+  return (
+    <>
+      <PageJsonLd page={page} />
+      <ContentPage page={page} />
+    </>
+  );
 }

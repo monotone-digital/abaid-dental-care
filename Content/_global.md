@@ -89,9 +89,9 @@ og:
 
 # JSON-LD: one `Dentist` node, on Home only.
 schema:
-  include: [name, url, telephone, address, openingHoursSpecification, geo, hasMap, sameAs]
+  include: [name, url, telephone, address, openingHoursSpecification, geo, hasMap, sameAs, services]
   exclude: [aggregateRating, review, priceRange, email, image of certificates]
   note: >
-    Do not list services in schema. If you ever do, it is the seven in treatmentGroup and
-    nothing else. No implants, no veneers.
+    Services are listed (approved by Uzair, 25 Sep 2026): the seven in treatmentGroup and
+    nothing else, named by their nav titles, with no prices. No implants, no veneers.
 ---

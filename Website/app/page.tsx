@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import HomePage from "@/components/brand/HomePage";
-import ClinicJsonLd from "@/components/JsonLd";
+import PageJsonLd from "@/components/JsonLd";
 import { getPage } from "@/lib/content";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -13,7 +13,7 @@ export default function Home() {
 
   return (
     <>
-      <ClinicJsonLd />
+      <PageJsonLd page={page} />
       <HomePage page={page} />
     </>
   );

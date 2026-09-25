@@ -22,5 +22,6 @@ export function buildMetadata(page: Page): Metadata {
       description: page.ogDescription ?? page.metaDescription,
       ...(image ? { images: [image] } : {}),
     },
+    twitter: { card: image ? "summary_large_image" : "summary" },
   };
 }

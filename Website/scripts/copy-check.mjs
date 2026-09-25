@@ -87,6 +87,37 @@ if (!pages.length) {
       if (hits) errors.push(`${name} — ${reason} (found "${hits[0]}", ${hits.length}x)`);
     }
 
+    // Search results and link previews: the title and meta tags never call Dr Abaid an
+    // orthodontist or specialist. (The approved About FAQ asks "Is Dr Abaid an orthodontist?",
+    // so this is checked here and in the JSON-LD below, not across the whole page.)
+    const head = [
+      ...(html.match(/<title>[\s\S]*?<\/title>/gi) ?? []),
+      ...(html.match(/<meta\s[^>]*content="[^"]*"[^>]*>/gi) ?? []),
+    ].join("\n");
+    const titleHit = head.match(/\borthodontists?\b|\bspecialists?\b/i);
+    if (titleHit) errors.push(`${name} — "${titleHit[0]}" in the title or meta tags`);
+
+    // Structured data: parse every JSON-LD block and check what it says about the clinic and Dr Abaid.
+    for (const [, json] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+      let data;
+      try {
+        data = JSON.parse(json);
+      } catch {
+        errors.push(`${name} — a JSON-LD block does not parse`);
+        continue;
+      }
+      for (const node of data["@graph"] ?? [data]) {
+        for (const key of ["priceRange", "review", "email", "aggregateRating"]) {
+          if (key in node) errors.push(`${name} — JSON-LD ${node["@type"]} has "${key}"`);
+        }
+        const about = [node.jobTitle, node.honorificSuffix, node.description, node.name]
+          .filter((v) => typeof v === "string" && node["@type"] !== "Question")
+          .join(" ");
+        const hit = about.match(/\borthodontists?\b|\bspecialists?\b/i);
+        if (hit) errors.push(`${name} — JSON-LD ${node["@type"]} says "${hit[0]}"`);
+      }
+    }
+
     const h1s = html.match(/<h1[\s>]/g) ?? [];
     if (h1s.length !== 1) errors.push(`${name} — expected exactly one <h1>, found ${h1s.length}`);
 
